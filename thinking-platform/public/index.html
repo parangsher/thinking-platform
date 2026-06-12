@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>사고의 힘 — 비판적 사고 플랫폼</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600&family=Noto+Sans+KR:wght@300;400;500&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #1a1814;
+    --ink-2: #3d3a34;
+    --ink-3: #7a7670;
+    --paper: #f7f4ee;
+    --paper-2: #ede9e0;
+    --paper-3: #e0dbd0;
+    --accent: #2d5a27;
+    --accent-2: #4a7c43;
+    --accent-light: #e8f0e6;
+    --warm: #8b4513;
+    --warm-light: #f5ede4;
+    --border: rgba(26,24,20,0.12);
+    --serif: 'DM Serif Display', 'Noto Serif KR', serif;
+    --sans: 'Noto Sans KR', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    line-height: 1.7;
+  }
+
+  /* HEADER */
+  header {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(247,244,238,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    height: 60px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .logo {
+    font-family: var(--serif);
+    font-size: 1.2rem;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  nav { display: flex; gap: 2rem; }
+  nav a {
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    color: var(--ink-3);
+    text-decoration: none;
+    text-transform: uppercase;
+    font-weight: 500;
+    transition: color 0.2s;
+    cursor: pointer;
+  }
+  nav a:hover { color: var(--accent); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 80px 2rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 20% 30%, rgba(45,90,39,0.07) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 60% at 80% 70%, rgba(139,69,19,0.05) 0%, transparent 70%);
+  }
+
+  .hero-grid {
+    position: absolute; inset: 0; opacity: 0.04;
+    background-image:
+      linear-gradient(var(--ink) 1px, transparent 1px),
+      linear-gradient(90deg, var(--ink) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .hero-content {
+    position: relative;
+    max-width: 800px;
+    text-align: center;
+  }
+
+  .hero-tag {
+    display: inline-block;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 4px 14px;
+    border-radius: 2px;
+    margin-bottom: 2rem;
+    animation: fadeUp 0.8s ease both;
+  }
+
+  .hero-title {
+    font-family: var(--serif);
+    font-size: clamp(2.8rem, 7vw, 5.5rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.8s ease 0.1s both;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--accent-2);
+  }
+
+  .hero-desc {
+    font-size: 1rem;
+    color: var(--ink-3);
+    max-width: 500px;
+    margin: 0 auto 3rem;
+    line-height: 1.8;
+    animation: fadeUp 0.8s ease 0.2s both;
+  }
+
+  .hero-cta {
+    display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+    animation: fadeUp 0.8s ease 0.3s both;
+  }
+
+  .btn-primary {
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    padding: 0.85rem 2.5rem;
+    font-family: var(--sans);
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.2s;
+    border-radius: 2px;
+    font-weight: 500;
+  }
+  .btn-primary:hover { background: var(--accent); transform: translateY(-1px); }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--ink-3);
+    padding: 0.85rem 2.5rem;
+    font-family: var(--sans);
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.2s;
+    border-radius: 2px;
+    font-weight: 500;
+  }
+  .btn-secondary:hover { border-color: var(--ink); transform: translateY(-1px); }
+
+  /* SECTIONS */
+  section {
+    padding: 6rem 2rem;
+  }
+
+  .container { max-width: 900px; margin: 0 auto; }
+
+  .section-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+    display: flex; align-items: center; gap: 0.75rem;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    max-width: 60px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .section-title {
+    font-family: var(--serif);
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    margin-bottom: 1rem;
+    color: var(--ink);
+  }
+
+  .section-subtitle {
+    font-size: 0.95rem;
+    color: var(--ink-3);
+    max-width: 540px;
+    margin-bottom: 3rem;
+    line-height: 1.8;
+  }
+
+  /* FEATURE 1: Critical Question Generator */
+  #feature1 { background: var(--paper-2); }
+
+  .input-area {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .input-label {
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+    display: block;
+  }
+
+  textarea, input[type="text"] {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1.5px solid var(--border);
+    padding: 0.5rem 0;
+    font-family: var(--sans);
+    font-size: 0.95rem;
+    color: var(--ink);
+    resize: none;
+    outline: none;
+    transition: border-color 0.2s;
+    line-height: 1.7;
+  }
+
+  textarea:focus, input[type="text"]:focus {
+    border-bottom-color: var(--accent);
+  }
+
+  textarea { min-height: 120px; }
+
+  .input-toolbar {
+    display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;
+    margin-top: 1rem;
+  }
+
+  .chip {
+    font-size: 0.72rem;
+    letter-spacing: 0.03em;
+    padding: 4px 12px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.15s;
+    color: var(--ink-2);
+    background: transparent;
+    font-family: var(--sans);
+    font-weight: 500;
+  }
+  .chip:hover, .chip.active { background: var(--accent); color: white; border-color: var(--accent); }
+
+  .generate-btn {
+    margin-left: auto;
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 0.6rem 1.5rem;
+    font-family: var(--sans);
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 2px;
+    font-weight: 500;
+    transition: all 0.2s;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .generate-btn:hover { background: var(--ink); }
+  .generate-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* Loading spinner */
+  .spinner {
+    width: 16px; height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    display: none;
+  }
+  .spinner.active { display: block; }
+
+  /* Questions output */
+  .questions-out {
+    display: none;
+    animation: fadeUp 0.5s ease both;
+  }
+  .questions-out.visible { display: block; }
+
+  .question-card {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 2px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1rem;
+    transition: all 0.2s;
+  }
+  .question-card:hover { border-left-color: var(--warm); }
+
+  .question-num {
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 0.4rem;
+  }
+
+  .question-text {
+    font-size: 0.95rem;
+    color: var(--ink);
+    line-height: 1.65;
+    margin-bottom: 0.75rem;
+    font-family: var(--serif);
+    font-weight: 400;
+  }
+
+  .answer-toggle {
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    color: var(--ink-3);
+    cursor: pointer;
+    text-transform: uppercase;
+    font-weight: 500;
+    border: none;
+    background: none;
+    padding: 0;
+    font-family: var(--sans);
+    transition: color 0.15s;
+    display: flex; align-items: center; gap: 0.4rem;
+  }
+  .answer-toggle:hover { color: var(--accent); }
+
+  .answer-area {
+    display: none;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+  }
+  .answer-area.open { display: block; }
+
+  .answer-area textarea {
+    font-size: 0.88rem;
+    min-height: 80px;
+    color: var(--ink-2);
+  }
+
+  .save-answer-btn {
+    margin-top: 0.5rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    background: transparent;
+    padding: 4px 12px;
+    border-radius: 2px;
+    cursor: pointer;
+    font-family: var(--sans);
+    font-weight: 500;
+    transition: all 0.15s;
+  }
+  .save-answer-btn:hover { background: var(--accent); color: white; }
+
+  .saved-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 0.72rem; color: var(--accent); font-weight: 500;
+    margin-left: 0.5rem; opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .saved-badge.show { opacity: 1; }
+
+  /* FEATURE 2: Literacy Chart */
+  #feature2 { background: var(--paper); }
+
+  .survey-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .survey-group {
+    background: var(--paper-2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.5rem;
+  }
+
+  .survey-group-title {
+    font-family: var(--serif);
+    font-size: 1rem;
+    color: var(--ink);
+    margin-bottom: 1.25rem;
+    display: flex; align-items: center; gap: 0.75rem;
+  }
+
+  .survey-group-icon {
+    width: 28px; height: 28px;
+    background: var(--accent-light);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+
+  .survey-item {
+    margin-bottom: 1.25rem;
+  }
+  .survey-item:last-child { margin-bottom: 0; }
+
+  .survey-question {
+    font-size: 0.88rem;
+    color: var(--ink-2);
+    margin-bottom: 0.6rem;
+    line-height: 1.6;
+  }
+
+  .likert {
+    display: flex; gap: 0.4rem; flex-wrap: wrap;
+  }
+
+  .likert-btn {
+    flex: 1; min-width: 44px;
+    padding: 0.4rem 0;
+    border: 1px solid var(--border);
+    background: var(--paper);
+    border-radius: 2px;
+    cursor: pointer;
+    font-family: var(--sans);
+    font-size: 0.75rem;
+    color: var(--ink-3);
+    font-weight: 500;
+    text-align: center;
+    transition: all 0.15s;
+  }
+  .likert-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .likert-btn.selected { background: var(--accent); color: white; border-color: var(--accent); }
+
+  .likert-labels {
+    display: flex; justify-content: space-between;
+    font-size: 0.65rem;
+    color: var(--ink-3);
+    margin-top: 0.3rem;
+    letter-spacing: 0.02em;
+  }
+
+  .chart-area {
+    display: none;
+    animation: fadeUp 0.6s ease both;
+  }
+  .chart-area.visible { display: block; }
+
+  .chart-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: start;
+  }
+
+  @media (max-width: 640px) {
+    .chart-wrapper { grid-template-columns: 1fr; }
+  }
+
+  .chart-canvas-wrap {
+    background: var(--paper-2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.5rem;
+  }
+
+  .solutions-panel {
+    display: flex; flex-direction: column; gap: 1rem;
+  }
+
+  .solution-item {
+    background: var(--paper-2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.25rem;
+    border-left: 3px solid var(--accent);
+    transition: all 0.2s;
+  }
+  .solution-item.weak { border-left-color: var(--warm); }
+
+  .solution-dim {
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 500;
+    color: var(--accent);
+    margin-bottom: 0.3rem;
+  }
+  .solution-item.weak .solution-dim { color: var(--warm); }
+
+  .solution-score {
+    font-family: var(--serif);
+    font-size: 1.4rem;
+    color: var(--ink);
+    margin-bottom: 0.4rem;
+    line-height: 1;
+  }
+
+  .solution-text {
+    font-size: 0.82rem;
+    color: var(--ink-3);
+    line-height: 1.65;
+  }
+
+  .progress-bar-wrap {
+    height: 3px;
+    background: var(--paper-3);
+    border-radius: 2px;
+    margin-top: 0.6rem;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 1s ease;
+  }
+  .solution-item.weak .progress-bar { background: var(--warm); }
+
+  /* ABOUT section */
+  #about {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  #about .section-label { color: rgba(231,218,192,0.6); }
+  #about .section-label::after { background: rgba(231,218,192,0.4); }
+  #about .section-title { color: var(--paper); }
+  #about .section-subtitle { color: rgba(231,218,192,0.7); }
+
+  .manifesto-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+
+  .manifesto-item {
+    padding: 1.5rem;
+    border: 1px solid rgba(231,218,192,0.15);
+    border-radius: 4px;
+    transition: all 0.2s;
+  }
+  .manifesto-item:hover { border-color: rgba(231,218,192,0.4); }
+
+  .manifesto-num {
+    font-family: var(--serif);
+    font-size: 2rem;
+    color: rgba(231,218,192,0.2);
+    margin-bottom: 0.75rem;
+    line-height: 1;
+  }
+
+  .manifesto-title {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--paper);
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.02em;
+  }
+
+  .manifesto-text {
+    font-size: 0.82rem;
+    color: rgba(231,218,192,0.6);
+    line-height: 1.7;
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--paper-3);
+    border-top: 1px solid var(--border);
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .footer-text {
+    font-size: 0.78rem;
+    color: var(--ink-3);
+    letter-spacing: 0.03em;
+  }
+
+  .footer-name {
+    font-family: var(--serif);
+    font-size: 0.9rem;
+    color: var(--ink-2);
+    margin-bottom: 0.25rem;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Scroll reveal */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.revealed {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Divider */
+  .divider {
+    display: flex; align-items: center; gap: 1rem;
+    margin: 2.5rem 0;
+  }
+  .divider::before, .divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+  .divider-symbol {
+    font-family: var(--serif);
+    font-size: 1rem;
+    color: var(--ink-3);
+  }
+
+  .error-msg {
+    font-size: 0.82rem;
+    color: var(--warm);
+    margin-top: 0.75rem;
+    padding: 0.6rem 1rem;
+    background: var(--warm-light);
+    border-radius: 2px;
+    border-left: 3px solid var(--warm);
+    display: none;
+  }
+  .error-msg.visible { display: block; }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="#">사고의 힘</a>
+  <nav>
+    <a onclick="document.getElementById('feature1').scrollIntoView({behavior:'smooth'})">비판적 질문</a>
+    <a onclick="document.getElementById('feature2').scrollIntoView({behavior:'smooth'})">리터러시 진단</a>
+    <a onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})">소개</a>
+  </nav>
+</header>
+
+<!-- HERO -->
+<div class="hero" id="home">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-tag">AI 시대의 비판적 사고</div>
+    <h1 class="hero-title">
+      생각하는 힘을<br><em>되찾다</em>
+    </h1>
+    <p class="hero-desc">
+      AI에게 생각을 맡기는 것이 아닌, AI에게 생각하는 힘에 대한 조력을 받는 플랫폼.
+      당신 안의 질문하는 능력을 깨웁니다.
+    </p>
+    <div class="hero-cta">
+      <button class="btn-primary" onclick="document.getElementById('feature1').scrollIntoView({behavior:'smooth'})">비판적 질문 생성하기</button>
+      <button class="btn-secondary" onclick="document.getElementById('feature2').scrollIntoView({behavior:'smooth'})">리터러시 자가진단</button>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURE 1 -->
+<section id="feature1">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">기능 01</div>
+      <h2 class="section-title">비판적 질문<br>생성기</h2>
+      <p class="section-subtitle">뉴스 기사, 주장, 담론을 입력하면 AI가 다각도에서 깊이 있는 질문을 생성합니다. 답은 AI가 아닌 당신이 직접 탐구합니다.</p>
+    </div>
+
+    <div class="reveal">
+      <div class="input-area">
+        <label class="input-label">분석할 텍스트 입력</label>
+        <textarea id="userInput" placeholder="뉴스 기사의 일부, 주장, 의제, 사회적 담론 등을 자유롭게 붙여넣으세요.&#10;&#10;예) '인공지능이 곧 인간의 모든 직업을 대체할 것이다. 따라서 우리는 AI 기술 습득에만 집중해야 한다.'"></textarea>
+        <div class="input-toolbar">
+          <span class="input-label" style="margin-bottom:0">분야 선택:</span>
+          <button class="chip active" data-field="general">전체</button>
+          <button class="chip" data-field="politics">정치/사회</button>
+          <button class="chip" data-field="tech">기술/AI</button>
+          <button class="chip" data-field="economy">경제</button>
+          <button class="chip" data-field="media">미디어</button>
+          <button class="generate-btn" id="generateBtn" onclick="generateQuestions()">
+            <span id="btnText">질문 생성</span>
+            <div class="spinner" id="btnSpinner"></div>
+          </button>
+        </div>
+      </div>
+
+      <div class="error-msg" id="errorMsg"></div>
+
+      <div class="questions-out" id="questionsOut">
+        <div class="divider"><span class="divider-symbol">✦</span></div>
+        <div id="questionsList"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURE 2 -->
+<section id="feature2">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">기능 02</div>
+      <h2 class="section-title">디지털 리터러시<br>자가진단</h2>
+      <p class="section-subtitle">디지털 사용 패턴과 알고리즘 의존도, 비판적 소통의 질을 측정합니다. 방사형 차트로 시각화하고 개선 솔루션을 제공합니다.</p>
+    </div>
+
+    <div class="reveal" id="surveySection">
+      <div class="survey-grid" id="surveyGrid"></div>
+      <div style="text-align:center; margin-top:1rem;">
+        <button class="btn-primary" id="analyzeBtn" onclick="analyzeLiteracy()">분석 결과 보기</button>
+        <p id="surveyWarning" style="font-size:0.8rem;color:var(--warm);margin-top:0.5rem;display:none;">모든 항목에 응답해 주세요.</p>
+      </div>
+    </div>
+
+    <div class="chart-area" id="chartArea">
+      <div class="divider"><span class="divider-symbol">✦</span></div>
+      <div class="chart-wrapper">
+        <div class="chart-canvas-wrap">
+          <canvas id="radarChart" width="340" height="340"></canvas>
+        </div>
+        <div class="solutions-panel" id="solutionsPanel"></div>
+      </div>
+      <div style="margin-top:1.5rem;text-align:center;">
+        <button class="btn-secondary" onclick="resetSurvey()">다시 진단하기</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">이 플랫폼에 대해</div>
+      <h2 class="section-title">왜 사고의 힘인가</h2>
+      <p class="section-subtitle">
+        AI 시대, 정보의 과잉과 알고리즘적 편향 속에서 우리는 스스로 생각하고 판단하는 능력을 잃어가고 있습니다.
+        이 플랫폼은 AI를 배제하는 것이 아닌, AI와 함께 더 깊이 사고하는 방법을 찾습니다.
+      </p>
+    </div>
+    <div class="manifesto-grid reveal">
+      <div class="manifesto-item">
+        <div class="manifesto-num">01</div>
+        <div class="manifesto-title">질문하는 능력</div>
+        <div class="manifesto-text">정답을 찾는 것보다 좋은 질문을 던지는 능력이 더 중요합니다. AI는 질문의 촉매제가 됩니다.</div>
+      </div>
+      <div class="manifesto-item">
+        <div class="manifesto-num">02</div>
+        <div class="manifesto-title">알고리즘 너머</div>
+        <div class="manifesto-text">알고리즘이 보여주는 것 이면의 다양한 관점을 탐색할 때, 비판적 사고가 시작됩니다.</div>
+      </div>
+      <div class="manifesto-item">
+        <div class="manifesto-num">03</div>
+        <div class="manifesto-title">주체적 판단</div>
+        <div class="manifesto-text">AI는 조력자일 뿐, 최종 판단은 항상 인간에게 있어야 합니다. 우리는 그 주체성을 지킵니다.</div>
+      </div>
+      <div class="manifesto-item">
+        <div class="manifesto-num">04</div>
+        <div class="manifesto-title">소통의 회복</div>
+        <div class="manifesto-text">에코챔버를 넘어 다양한 시각과 마주하고, 사회적 소통의 질을 높이는 것을 지향합니다.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p class="footer-name">유예지</p>
+  <p class="footer-text">2610081 · 행정학과 · 사고하는 힘의 회복을 위한 인터랙티브 웹 플랫폼</p>
+</footer>
+
+<script>
+// ===== SURVEY DATA =====
+const surveyDimensions = [
+  {
+    id: 'critical',
+    label: '비판적 사고',
+    icon: '◎',
+    color: '#2d5a27',
+    questions: [
+      { id: 'c1', text: '뉴스나 정보를 접할 때 출처와 근거를 확인하는 편이다.' },
+      { id: 'c2', text: '특정 주장에 반대 의견도 함께 찾아보는 편이다.' },
+      { id: 'c3', text: '알고리즘이 나에게 제공하는 콘텐츠가 편향될 수 있다고 인식한다.' },
+    ]
+  },
+  {
+    id: 'algorithm',
+    label: '알고리즘 독립성',
+    icon: '◈',
+    color: '#8b4513',
+    questions: [
+      { id: 'a1', text: '추천 피드보다 내가 직접 선택한 정보를 소비하는 경우가 많다.' },
+      { id: 'a2', text: '같은 주제에 대해 여러 플랫폼에서 정보를 교차 확인한다.' },
+      { id: 'a3', text: '소셜미디어 알고리즘에 의해 의견이 형성된다고 느끼지 않는다.' },
+    ]
+  },
+  {
+    id: 'communication',
+    label: '소통의 질',
+    icon: '◉',
+    color: '#1a5276',
+    questions: [
+      { id: 'cm1', text: '나와 다른 의견을 가진 사람과 건설적인 대화가 가능하다.' },
+      { id: 'cm2', text: '온라인에서 감정적 반응보다 논리적 반응을 먼저 한다.' },
+      { id: 'cm3', text: '에코챔버(나와 비슷한 생각만 있는 공간)에 갇혀 있지 않다고 생각한다.' },
+    ]
+  },
+  {
+    id: 'ai_literacy',
+    label: 'AI 활용 리터러시',
+    icon: '◇',
+    color: '#5b2c6f',
+    questions: [
+      { id: 'ai1', text: 'AI의 답변을 그대로 수용하기보다 비판적으로 검토한다.' },
+      { id: 'ai2', text: 'AI가 생성한 콘텐츠와 인간이 작성한 콘텐츠를 구별하려 노력한다.' },
+      { id: 'ai3', text: 'AI를 도구로 활용하되, 핵심적인 판단은 스스로 내린다.' },
+    ]
+  },
+  {
+    id: 'mindfulness',
+    label: '디지털 마음챙김',
+    icon: '○',
+    color: '#117a65',
+    questions: [
+      { id: 'm1', text: '스크린 타임을 의식적으로 조절하는 편이다.' },
+      { id: 'm2', text: '디지털 기기 없이 깊이 생각하거나 집중할 수 있다.' },
+      { id: 'm3', text: '디지털 피로감을 인지하고 의도적으로 오프라인 시간을 갖는다.' },
+    ]
+  }
+];
+
+const solutions = {
+  critical: {
+    good: '비판적 사고 능력이 우수합니다. 다양한 관점을 통합하는 메타인지 훈련으로 더욱 심화시켜 보세요.',
+    weak: '팩트체킹 습관을 들여보세요. 주요 언론사의 기사와 반론을 병행하여 읽는 연습이 도움됩니다.'
+  },
+  algorithm: {
+    good: '알고리즘에 대한 독립성이 높습니다. 의도적으로 다양한 관점의 미디어를 구독하는 실천을 이어가세요.',
+    weak: '추천 피드에서 잠시 벗어나 직접 검색하는 습관을 길러보세요. RSS 피드나 뉴스레터도 좋은 대안입니다.'
+  },
+  communication: {
+    good: '소통의 질이 높습니다. 다양성을 존중하는 대화 방식을 주변에도 확산시켜 보세요.',
+    weak: '다른 의견을 가진 사람의 글을 의도적으로 읽어보는 연습이 필요합니다. 판단 전에 먼저 이해하려 시도해 보세요.'
+  },
+  ai_literacy: {
+    good: 'AI 활용 리터러시가 뛰어납니다. AI 편향성과 한계에 대한 깊은 이해로 발전시켜 보세요.',
+    weak: 'AI 답변을 수용할 때 "왜?"를 묻는 습관을 들여보세요. 중요한 결정에서는 반드시 독립적 판단을 거치세요.'
+  },
+  mindfulness: {
+    good: '디지털 마음챙김이 훌륭합니다. 오프라인 사고 시간을 일정하게 유지하는 루틴으로 발전시켜 보세요.',
+    weak: '하루 30분 디지털 디톡스 시간을 확보해 보세요. 산책, 독서, 필기 등 오프라인 사고 활동이 인지 회복에 효과적입니다.'
+  }
+};
+
+const answers = {};
+
+// ===== RENDER SURVEY =====
+function renderSurvey() {
+  const grid = document.getElementById('surveyGrid');
+  grid.innerHTML = surveyDimensions.map(dim => `
+    <div class="survey-group reveal">
+      <div class="survey-group-title">
+        <div class="survey-group-icon">${dim.icon}</div>
+        ${dim.label}
+      </div>
+      ${dim.questions.map(q => `
+        <div class="survey-item">
+          <div class="survey-question">${q.text}</div>
+          <div class="likert">
+            ${[1,2,3,4,5].map(v => `
+              <button class="likert-btn" data-qid="${q.id}" data-val="${v}" onclick="selectLikert('${q.id}', ${v}, this)">${v}</button>
+            `).join('')}
+          </div>
+          <div class="likert-labels">
+            <span>전혀 아님</span>
+            <span>매우 그러함</span>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+  initReveal();
+}
+
+function selectLikert(qid, val, btn) {
+  answers[qid] = val;
+  const btns = document.querySelectorAll(`[data-qid="${qid}"]`);
+  btns.forEach(b => b.classList.toggle('selected', parseInt(b.dataset.val) === val));
+}
+
+// ===== ANALYZE LITERACY =====
+function analyzeLiteracy() {
+  const totalQ = surveyDimensions.reduce((s, d) => s + d.questions.length, 0);
+  if (Object.keys(answers).length < totalQ) {
+    document.getElementById('surveyWarning').style.display = 'block';
+    return;
+  }
+  document.getElementById('surveyWarning').style.display = 'none';
+
+  const scores = surveyDimensions.map(dim => {
+    const total = dim.questions.reduce((s, q) => s + (answers[q.id] || 0), 0);
+    return Math.round((total / (dim.questions.length * 5)) * 100);
+  });
+
+  document.getElementById('surveySection').style.display = 'none';
+  const chartArea = document.getElementById('chartArea');
+  chartArea.classList.add('visible');
+
+  renderRadarChart(scores);
+  renderSolutions(scores);
+  chartArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+let radarChartInstance = null;
+function renderRadarChart(scores) {
+  const ctx = document.getElementById('radarChart').getContext('2d');
+  if (radarChartInstance) radarChartInstance.destroy();
+
+  radarChartInstance = new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels: surveyDimensions.map(d => d.label),
+      datasets: [{
+        data: scores,
+        backgroundColor: 'rgba(45,90,39,0.12)',
+        borderColor: '#2d5a27',
+        borderWidth: 2,
+        pointBackgroundColor: '#2d5a27',
+        pointBorderColor: '#f7f4ee',
+        pointBorderWidth: 2,
+        pointRadius: 5,
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        r: {
+          min: 0, max: 100,
+          ticks: { stepSize: 25, font: { size: 10 }, color: '#7a7670', backdropColor: 'transparent' },
+          grid: { color: 'rgba(26,24,20,0.1)' },
+          angleLines: { color: 'rgba(26,24,20,0.1)' },
+          pointLabels: {
+            font: { size: 11, family: "'Noto Sans KR'" },
+            color: '#3d3a34'
+          }
+        }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => ` ${ctx.raw}점`
+          }
+        }
+      }
+    }
+  });
+}
+
+function renderSolutions(scores) {
+  const panel = document.getElementById('solutionsPanel');
+  const sorted = surveyDimensions.map((d, i) => ({ ...d, score: scores[i] }))
+    .sort((a, b) => a.score - b.score);
+
+  panel.innerHTML = sorted.map(d => {
+    const isWeak = d.score < 60;
+    return `
+      <div class="solution-item ${isWeak ? 'weak' : ''}">
+        <div class="solution-dim">${d.label}</div>
+        <div class="solution-score">${d.score}점</div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar" style="width:${d.score}%"></div>
+        </div>
+        <div class="solution-text" style="margin-top:0.6rem">${isWeak ? solutions[d.id].weak : solutions[d.id].good}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function resetSurvey() {
+  Object.keys(answers).forEach(k => delete answers[k]);
+  document.getElementById('chartArea').classList.remove('visible');
+  document.getElementById('surveySection').style.display = 'block';
+  renderSurvey();
+  document.getElementById('feature2').scrollIntoView({ behavior: 'smooth' });
+}
+
+// ===== CRITICAL QUESTION GENERATOR =====
+let selectedField = 'general';
+
+document.querySelectorAll('.chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    selectedField = chip.dataset.field;
+  });
+});
+
+async function generateQuestions() {
+  const text = document.getElementById('userInput').value.trim();
+  if (!text) {
+    showError('분석할 텍스트를 입력해 주세요.');
+    return;
+  }
+  if (text.length < 20) {
+    showError('더 충분한 내용을 입력해 주세요. (20자 이상)');
+    return;
+  }
+
+  hideError();
+  setLoading(true);
+
+  const fieldMap = {
+    general: '전반적',
+    politics: '정치·사회적',
+    tech: '기술·AI 윤리적',
+    economy: '경제·구조적',
+    media: '미디어·정보 리터러시'
+  };
+
+  const systemPrompt = `당신은 비판적 사고를 돕는 교육 전문가입니다. 사용자가 입력한 텍스트에 대해 다각도의 비판적 질문을 생성합니다.
+
+규칙:
+- 반드시 JSON 형식으로만 응답하세요. 다른 텍스트나 설명은 절대 포함하지 마세요.
+- JSON 형식: {"questions": [{"num": 1, "perspective": "관점명", "question": "질문 내용"}, ...]}
+- 5개의 질문을 생성하세요.
+- 각 질문은 다른 관점(숨겨진 전제, 반론, 맥락, 영향, 대안)에서 나와야 합니다.
+- 질문은 깊이 있고 사유를 자극해야 합니다.
+- ${fieldMap[selectedField]} 관점에서 분석하세요.
+- 한국어로 작성하세요.`;
+
+  try {
+    const res = await 
+fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: `다음 텍스트에 대한 비판적 질문 5개를 생성해주세요:\n\n"${text}"` }]
+      })
+    });
+
+    const data = await res.json();
+    const raw = data.content.map(b => b.text || '').join('');
+    const cleaned = raw.replace(/```json|```/g, '').trim();
+    const parsed = JSON.parse(cleaned);
+    renderQuestions(parsed.questions);
+  } catch (e) {
+    showError('질문 생성 중 오류가 발생했습니다. API 키가 설정되어 있는지 확인해 주세요.');
+  } finally {
+    setLoading(false);
+  }
+}
+
+function renderQuestions(questions) {
+  const list = document.getElementById('questionsList');
+  list.innerHTML = questions.map((q, i) => `
+    <div class="question-card" style="animation-delay:${i * 0.1}s">
+      <div class="question-num">Q${q.num} · ${q.perspective}</div>
+      <div class="question-text">${q.question}</div>
+      <button class="answer-toggle" onclick="toggleAnswer(${i})">
+        <span>✍ 내 생각 적기</span>
+      </button>
+      <div class="answer-area" id="ans-${i}">
+        <textarea placeholder="이 질문에 대한 당신의 생각을 자유롭게 적어보세요..." id="ans-text-${i}"></textarea>
+        <div style="display:flex;align-items:center;gap:0.5rem;margin-top:0.4rem;">
+          <button class="save-answer-btn" onclick="saveAnswer(${i})">저장</button>
+          <span class="saved-badge" id="saved-${i}">✓ 저장됨</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  const out = document.getElementById('questionsOut');
+  out.classList.add('visible');
+  out.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function toggleAnswer(i) {
+  const area = document.getElementById(`ans-${i}`);
+  area.classList.toggle('open');
+}
+
+function saveAnswer(i) {
+  const txt = document.getElementById(`ans-text-${i}`).value;
+  if (!txt.trim()) return;
+  const badge = document.getElementById(`saved-${i}`);
+  badge.classList.add('show');
+  setTimeout(() => badge.classList.remove('show'), 2000);
+}
+
+function setLoading(on) {
+  const btn = document.getElementById('generateBtn');
+  const txt = document.getElementById('btnText');
+  const spin = document.getElementById('btnSpinner');
+  btn.disabled = on;
+  txt.textContent = on ? '생성 중...' : '질문 생성';
+  spin.classList.toggle('active', on);
+}
+
+function showError(msg) {
+  const el = document.getElementById('errorMsg');
+  el.textContent = msg;
+  el.classList.add('visible');
+}
+function hideError() {
+  document.getElementById('errorMsg').classList.remove('visible');
+}
+
+// ===== SCROLL REVEAL =====
+function initReveal() {
+  const els = document.querySelectorAll('.reveal:not(.revealed)');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('revealed');
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  els.forEach(el => obs.observe(el));
+}
+
+// ===== INIT =====
+renderSurvey();
+initReveal();
+</script>
+</body>
+</html>
